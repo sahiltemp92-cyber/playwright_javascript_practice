@@ -1,0 +1,21 @@
+{
+  "name": "playwright_javascript_practice",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sahiltemp92-cyber/playwright_javascript_practice.git"
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/sahiltemp92-cyber/playwright_javascript_practice/issues"
+  },
+  "homepage": "https://github.com/sahiltemp92-cyber/playwright_javascript_practice#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "@types/node": "^26.4.1"
+  }
+}
