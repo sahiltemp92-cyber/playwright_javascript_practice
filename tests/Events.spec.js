@@ -89,7 +89,46 @@ test.only("Create event via UI, book it and verify seat reduction", async ({ pag
     const seatsBeforeBooking = parseInt(await targetCard.getByText('seat').first().innerText())
     console.log(`Seats before booking : ${seatsBeforeBooking}`)
 
+    // Step 4 : Start booking
     await targetCard.getByTestId("book-now-btn").click()
+
+    // Step 5 : Fill the booking form
+    let fullName = "Sahil Khenat"
+    let eventEmail = "sahil@example.com"
+    let eventPhone = "+91 9876543210"
+    await expect(page.locator("#ticket-count")).toHaveText("1")
+    await page.getByLabel("Full Name").fill(fullName)
+    await page.locator("#customer-email").fill(eventEmail)
+    await page.getByPlaceholder("+91 98765 43210").fill(eventPhone)
+    await page.locator(".confirm-booking-btn").click()
+
+    // Step 6 : Verify booking confirmation
+    const bookingRef = page.locator(".booking-ref").first()
+    await expect(bookingRef).toBeVisible()
+    let bookingRefNumber = await bookingRef.innerText()
+    console.log(`Booking Reference Number : ${bookingRefNumber}`)
+
+    // Step 7 : Verify booking appears in My Bookings
+    await page.getByRole('button', { name: 'View My Bookings' }).click()
+    await page.waitForURL(`${BASE_URL}/bookings`)
+    expect(page.url()).toBe(`${BASE_URL}/bookings`)
+    const allBookingCards = await page.locator("#booking-card")
+    await expect(allBookingCards.first()).toBeVisible()
+    const matchingCard = allBookingCards.filter({ has: page.locator(".booking-ref", { hasText: bookingRefNumber }) })
+    await expect(matchingCard).toBeVisible({ timeout: 5000 })
+    await expect(matchingCard).toContainText(eventTitle)
+
+    // Step 8 : Verify Seat reduction
+    await page.goto(`${BASE_URL}/events`)
+    await expect(allEventCards.first()).toBeVisible()
+
+    const targetCardAfterBooking = allEventCards.filter({ hasText: eventTitle }).first()
+    await expect(targetCardAfterBooking).toBeVisible({ timeout: 5000 })
+
+    const seatsAfterBooking = parseInt(await targetCardAfterBooking.getByText('seat').first().innerText())
+    console.log(`Seats after booking : ${seatsAfterBooking}`)
+
+    expect(seatsAfterBooking).toBe(seatsBeforeBooking - 1)
 
 
 }

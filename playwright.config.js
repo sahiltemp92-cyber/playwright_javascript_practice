@@ -19,7 +19,7 @@ const config = ({
   expect: { timeout: 40 * 1000 }, // Default expect assert timeout set to 40 seconds
   reporter: 'html',  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   use: {
-    browserName: 'webkit',
+    browserName: 'chromium',
     headless: false
   }
 })
