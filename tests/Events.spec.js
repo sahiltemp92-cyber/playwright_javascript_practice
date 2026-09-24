@@ -51,7 +51,7 @@ async function enterDateTime(locator, dateTimeStr) {
 
 
 // Test
-test.only("Create event via UI, book it and verify seat reduction", async ({ page }) => {
+test("Create event via UI, book it and verify seat reduction", async ({ page }) => {
     // Step 1 : Login
     await login(page)
 
@@ -133,4 +133,113 @@ test.only("Create event via UI, book it and verify seat reduction", async ({ pag
 
 }
 
+)
+
+
+async function loginAndGoToBookings(page) {
+    await login(page)
+    await page.getByRole("button", { name: "My Bookings" }).click()
+    await page.waitForURL(`${BASE_URL}/bookings`)
+    expect(page.url()).toBe(`${BASE_URL}/bookings`)
+}
+
+test("Refund eligibility check - Eligible scenario", async ({ page }) => {
+
+    // Step 1 - Login
+    await login(page)
+
+    // Step 2 - Book first event with 1 ticket
+    await page.goto(`${BASE_URL}/events`)
+    const allEventCards = page.locator("[data-testid='event-card']")
+    await expect(allEventCards.first()).toBeVisible()
+
+    const targetCard = allEventCards.first()
+    await expect(targetCard).toBeVisible({ timeout: 5000 })
+
+    await targetCard.getByTestId("book-now-btn").click()
+
+    let fullName = "Sahil Khenat"
+    let eventEmail = "sahil@example.com"
+    let eventPhone = "+91 9876543210"
+    await expect(page.locator("#ticket-count")).toHaveText("1")
+    await page.getByLabel("Full Name").fill(fullName)
+    await page.locator("#customer-email").fill(eventEmail)
+    await page.getByPlaceholder("+91 98765 43210").fill(eventPhone)
+    await page.locator(".confirm-booking-btn").click()
+
+    // Step 3 - Navigate to booking details
+    await page.getByRole('button', { name: 'View My Bookings' }).click()
+    await page.waitForURL(`${BASE_URL}/bookings`)
+    await page.getByRole("button", { name: "View Details" }).first().click()
+    await page.waitForURL(RegExp(`${BASE_URL}/bookings` + `/.+`))
+    expect(page.getByRole('heading', { name: 'Booking Information' })).toBeVisible()
+
+    // Step 4 - Validate booking ref
+    let bookingRef = await page.locator("span.font-mono.font-bold").first().innerText()
+    let eventTitle = await page.locator("h1").innerText()
+    expect(bookingRef.charAt(0)).toBe(eventTitle.charAt(0))
+
+    // Step 5 - Verify refund eligibility
+    await page.getByTestId("check-refund-btn").click()
+    await expect(page.getByTestId("refund-spinner")).toBeVisible()
+    await expect(page.getByTestId("refund-spinner")).not.toBeVisible({ timeout: 60000 })
+
+    // Step 6 - Validate result
+    let refundResult = await page.locator("#refund-result").innerText()
+    expect(refundResult).toContain("Eligible for refund.")
+    expect(refundResult).toContain("Single-ticket bookings qualify for a full refund.")
+}
+)
+
+
+test.only("Refund eligibility check - Not eligible for group ticket scenario", async ({ page }) => {
+
+    // Step 1 - Login
+    await login(page)
+
+    // Step 2 - Book first event with 3 ticket
+    await page.goto(`${BASE_URL}/events`)
+    const allEventCards = page.locator("[data-testid='event-card']")
+    await expect(allEventCards.first()).toBeVisible()
+
+    const targetCard = allEventCards.first()
+    await expect(targetCard).toBeVisible({ timeout: 5000 })
+
+    await targetCard.getByTestId("book-now-btn").click()
+
+    let fullName = "Sahil Khenat"
+    let eventEmail = "sahil@example.com"
+    let eventPhone = "+91 9876543210"
+
+    await expect(page.locator("#ticket-count")).toHaveText("1")
+    await page.getByRole('button', { name: '+' }).click()   // click + first time
+    await page.getByRole('button', { name: '+' }).click()    // click + second time
+    await expect(page.locator("#ticket-count")).toHaveText("3")
+    await page.getByLabel("Full Name").fill(fullName)
+    await page.locator("#customer-email").fill(eventEmail)
+    await page.getByPlaceholder("+91 98765 43210").fill(eventPhone)
+    await page.locator(".confirm-booking-btn").click()
+
+    // Step 3 - Navigate to booking details
+    await page.getByRole('button', { name: 'View My Bookings' }).click()
+    await page.waitForURL(`${BASE_URL}/bookings`)
+    await page.getByRole("button", { name: "View Details" }).first().click()
+    await page.waitForURL(RegExp(`${BASE_URL}/bookings` + `/.+`))
+    expect(page.getByRole('heading', { name: 'Booking Information' })).toBeVisible()
+
+    // Step 4 - Validate booking ref
+    let bookingRef = await page.locator("span.font-mono.font-bold").first().innerText()
+    let eventTitle = await page.locator("h1").innerText()
+    expect(bookingRef.charAt(0)).toBe(eventTitle.charAt(0))
+
+    // Step 5 - Verify refund eligibility
+    await page.getByTestId("check-refund-btn").click()
+    await expect(page.getByTestId("refund-spinner")).toBeVisible()
+    await expect(page.getByTestId("refund-spinner")).not.toBeVisible({ timeout: 60000 })
+
+    // Step 6 - Validate result
+    let refundResult = await page.locator("#refund-result").innerText()
+    expect(refundResult).toContain("Not eligible for refund.")
+    expect(refundResult).toContain("Group bookings (3 tickets) are non-refundable.")
+}
 )
