@@ -1,4 +1,5 @@
 import { test, expect, request } from "@playwright/test";
+import { APIUtils } from "../utils/APIUtils"
 const URL = "https://rahulshettyacademy.com/api/ecom/auth/login"
 const loginPayload = {
     userEmail: "sahil.khenat.career@gmail.com",
@@ -13,37 +14,12 @@ const orderPayload = {
     ]
 }
 
-
-let token;
-let orderID;
+let response;
 
 test.beforeAll(async () => {
     const apiContext = await request.newContext()
-
-    // Login API call
-    const loginAPIResponse = await apiContext.post(URL,
-        {
-            data: loginPayload
-        }
-    )
-    expect(loginAPIResponse.ok()).toBe(true)
-    const loginAPIResponseJSON = await loginAPIResponse.json()
-    token = loginAPIResponseJSON.token
-    console.log(token)
-
-    // Create Order API call
-    const orderAPIResponse = await apiContext.post("https://rahulshettyacademy.com/api/ecom/order/create-order",
-        {
-            data: orderPayload,
-            headers: {
-                'Authorization': token,
-                'Content-Type': 'application/json'
-            },
-        }
-    )
-    const orderAPIResponseJSON = await orderAPIResponse.json()
-    orderID = orderAPIResponseJSON.orders[0]
-    console.log(orderID)
+    const apiUtils = new APIUtils(apiContext, loginPayload)
+    response = await apiUtils.createOrder(orderPayload)
 
 }
 )
@@ -63,11 +39,11 @@ test.afterAll(() => {
 }
 )
 
-test.only("Create Order", async ({ page }) => {
+test.only("Create Order by API and validate order from UI", async ({ page }) => {
     // Script to add token in localstorage before page load
     page.addInitScript(async (value) => {
         window.localStorage.setItem("token", value);
-    }, token)
+    }, response.token)
 
     await page.goto("https://rahulshettyacademy.com/client/")
     await page.locator("[routerlink='/dashboard/myorders']").first().click()
@@ -77,13 +53,13 @@ test.only("Create Order", async ({ page }) => {
 
     for (let i = 0; i < await rows.count(); ++i) {
         const rowOrderId = await rows.nth(i).locator("th").textContent()
-        if (orderID.includes(rowOrderId)) {
+        if (response.orderID.includes(rowOrderId)) {
             await rows.nth(i).locator("button").first().click()
             break;
         }
     }
     const orderIdDetails = await page.locator(".col-text").textContent()
-    console.log(orderIdDetails)
-    expect(orderIdDetails.includes(orderID)).toBe(true)
+    console.log("Order Details :" + orderIdDetails)
+    expect(orderIdDetails.includes(response.orderID)).toBe(true)
 }
 )
