@@ -35,7 +35,7 @@ test("Mouse hover handling", async ({ page }) => {
 }
 )
 
-test.only("Frame handling", async ({ page }) => {
+test("Frame handling", async ({ page }) => {
     await page.goto('https://rahulshettyacademy.com/AutomationPractice/')
     const framesPage = page.frameLocator("#courses-iframe")
     await framesPage.locator("a[href*='lifetime-access']:visible").first().click()
