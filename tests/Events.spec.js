@@ -192,7 +192,7 @@ test("Refund eligibility check - Eligible scenario", async ({ page }) => {
 )
 
 
-test.only("Refund eligibility check - Not eligible for group ticket scenario", async ({ page }) => {
+test("Refund eligibility check - Not eligible for group ticket scenario", async ({ page }) => {
 
     // Step 1 - Login
     await login(page)

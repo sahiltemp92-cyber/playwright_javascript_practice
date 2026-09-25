@@ -20,7 +20,8 @@ const config = ({
   reporter: 'html',  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   use: {
     browserName: 'chromium',
-    headless: false
+    headless: false,
+    trace: 'on'
   }
 })
 
