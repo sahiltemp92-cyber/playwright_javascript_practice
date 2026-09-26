@@ -39,7 +39,7 @@ test.afterAll(() => {
 }
 )
 
-test.only("Create Order by API and validate order from UI", async ({ page }) => {
+test("Create Order by API and validate order from UI", async ({ page }) => {
     // Script to add token in localstorage before page load
     page.addInitScript(async (value) => {
         window.localStorage.setItem("token", value);
