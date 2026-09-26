@@ -31,7 +31,6 @@ test("UI controls", async ({ page }) => {
     const user_radio_button = page.locator("//input[@type='radio'][@value='user']")
     const dropdown = page.locator("select.form-control")
     await dropdown.selectOption("consult")
-    await page.pause()
 
     await page.locator(".radiotextsty").last().click() //last radio button (user) is clicked
     await page.locator("#okayBtn").click() //okay button is clicked
