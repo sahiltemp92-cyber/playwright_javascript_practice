@@ -27,7 +27,7 @@ test.beforeAll(async () => {
 }
 )
 
-test.only("Create Order by API and validate order from UI", async ({ page }) => {
+test("Response Interception - Fake number of orders to zero to validate no orders message", async ({ page }) => {
     // Script to add token in localstorage before page load
     page.addInitScript(async (value) => {
         window.localStorage.setItem("token", value);
@@ -38,6 +38,8 @@ test.only("Create Order by API and validate order from UI", async ({ page }) => 
         async route => {
             //Intercept Response - API response - Playwright Fake Response
             await page.request.fetch(route.request())
+
+            // Modify body
             let body = JSON.stringify(fakePayloadOrders)
             route.fulfill(
                 {
@@ -50,11 +52,58 @@ test.only("Create Order by API and validate order from UI", async ({ page }) => 
     )
 
     await page.goto("https://rahulshettyacademy.com/client/")
-    await page.pause()
-
     await page.locator("[routerlink='/dashboard/myorders']").first().click()
     await page.waitForResponse(routeURL)
     const rows = page.locator("tbody tr")
     console.log(`Number of orders is : ${await rows.count()}`)
 }
 )
+
+
+test("Request Interception - Security test - Verify unauthorized message is displayed", async ({ page }) => {
+    // Login
+    await page.goto("https://rahulshettyacademy.com/client")
+    await page.locator("[type='email']").fill("sahil.khenat.career@gmail.com")
+    await page.locator("[type='password']").fill("Rahul@12345")
+    await page.locator("[type='submit']").click()
+    await page.waitForURL("https://rahulshettyacademy.com/client/#/dashboard/dash")
+    await page.locator("[routerlink='/dashboard/myorders']").first().click()
+
+    const ordersURL = "https://rahulshettyacademy.com/api/ecom/order/get-orders-details?id=*"
+    const otherAccountOrderId = "6aba09292be7a4bc2b74c920"
+    const routedURL = `${ordersURL.slice(0, -1)}${otherAccountOrderId}`
+    console.log(routedURL)
+
+    // Routing logic - Request interception
+    await page.route(ordersURL,
+        route => route.continue({ url: routedURL })
+    )
+
+    // Action
+    await page.getByRole("button", { name: "View" }).first().click()
+
+    // Assertion
+    const unauthorizedMessage = await page.locator("p.blink_me").textContent()
+    expect(unauthorizedMessage).toContain("You are not authorize to view this order")
+})
+
+test('Request Abort - CSS Break', async ({ page }) => {
+    // Before Login - disable CSS
+    await page.route("**/*.css", route => route.abort())
+
+
+    // Login
+    await page.goto("https://rahulshettyacademy.com/client")
+    await page.locator("[type='email']").fill("sahil.khenat.career@gmail.com")
+    await page.locator("[type='password']").fill("Rahul@12345")
+    await page.locator("[type='submit']").click()
+
+    // Before Dashboard page redirection - disable images
+    await page.route("**/*.{png, jpg, jpeg}", route => route.abort())
+
+    await page.waitForURL("https://rahulshettyacademy.com/client/#/dashboard/dash")
+    await page.locator("[routerlink='/dashboard/myorders']").first().click()
+
+    console.log("Abort ")
+
+})
