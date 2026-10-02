@@ -25,7 +25,7 @@ async function loginAs(page, user) {
     await expect(page.getByRole('link', { name: 'Browse Events →' })).toBeVisible()
 }
 
-test.only("Gmail User access is denied when viewing Yahoo user's booking", async ({ page, request }) => {
+test("Gmail User access is denied when viewing Yahoo user's booking", async ({ page, request }) => {
 
     //Step 1: Login as Yahoo User and get token
     const loginResponse = await request.post(`${API_URL}/auth/login`,

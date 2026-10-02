@@ -15,6 +15,7 @@ import { defineConfig, devices } from '@playwright/test';
 const config = ({
   /* Default tests folder */
   testDir: './tests',
+  snapshotPathTemplate: '{rootDir}/screenshots/{arg}{ext}',
   timeout: 60 * 1000, // Default test timeout set to 60 seconds
   expect: { timeout: 40 * 1000 }, // Default expect assert timeout set to 40 seconds
   reporter: 'html',  /* Reporter to use. See https://playwright.dev/docs/test-reporters */

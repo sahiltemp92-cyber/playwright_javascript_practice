@@ -42,8 +42,8 @@ const LOGIN_URL = 'https://eventhub.rahulshettyacademy.com/login';
 const API_BASE_URL = 'https://api.eventhub.rahulshettyacademy.com';
 
 const credentials = {
-    email: 'rahulshetty1@yahoo.com',
-    password: 'Magiclife1!',
+    email: 'sahil@yahoo.com',
+    password: 'Rahul@12345',
 };
 
 exports.eventTest = base.test.extend({
@@ -78,7 +78,7 @@ exports.eventTest = base.test.extend({
         const token = loginBody.token;
 
         const eventPayload = {
-            title: `Automation Test Event ${Date.now()}`,
+            title: `Sahil Automation Test Event ${Date.now()}`,
             description: 'Created by an automated Playwright fixture for testing.',
             category: 'Conference',
             venue: 'Bangalore International Centre',
