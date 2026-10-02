@@ -1,3 +1,14 @@
+/*
+ Assignment 3: Sandbox Banner Visibility with API Mocking
+
+Steps:
+1. Login as a user and navigate to the events page
+2. Mock the API response to return 6 events
+3. Verify that the banner is visible
+4. Mock the API response to return 4 events
+5. Verify that the banner is NOT visible
+*/
+
 import { test, expect } from "@playwright/test"
 
 const BASE_URL = "https://eventhub.rahulshettyacademy.com"
