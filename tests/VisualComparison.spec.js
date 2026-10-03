@@ -1,8 +1,6 @@
 import { test, expect } from "@playwright/test"
 
-
-
-test.only("Screenshot and Visual Regression", async ({ page }) => {
+test("Screenshot and Visual Regression", async ({ page }) => {
     // Screenshot at locator level
     await page.goto("https://rahulshettyacademy.com/AutomationPractice/")
     await expect(page.locator("#displayed-text")).toBeVisible()
