@@ -79,7 +79,9 @@ test("Client APP E2E", async ({ page }) => {
     await page.getByRole('button', { name: 'Apply Coupon' }).click()
 
     // Fill Shipping Info - Email, Country
-    await page.getByPlaceholder('Select Country').pressSequentially('Indi', { delay: 150 });
+    await page.getByPlaceholder('Select Country').click()
+    await page.getByPlaceholder('Select Country').pressSequentially('Indi', { delay: 250 });
+
     const country_dropdown = page.locator(".ta-results") //wait for the options to load
     await country_dropdown.waitFor()
     const optionsCount = await country_dropdown.locator("button").count()
