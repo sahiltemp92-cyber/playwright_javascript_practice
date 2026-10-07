@@ -26,18 +26,22 @@ const config = ({
       name: 'Safari',
       use: {
         browserName: 'webkit',
-        headless: true,
+        headless: false,
         screenshot: 'on',
-        trace: 'on'
+        trace: 'on',
+        viewport: { width: 1920, height: 1080 }, // Standard Desktop
+        ignoreHttpsErrors: true, // Ignore HTTPS Errors
+        permissions: ["geolocation"] // Ask for permission on every load
       }
     },
     {
-      name: 'Chromium',
+      name: 'Desktop Safari',
       use: {
-        browserName: 'chromium',
+        browserName: 'webkit',
         headless: false,
         screenshot: 'on',
-        trace: 'on'
+        trace: 'on',
+        ...devices['Desktop Safari']
       }
     },
     {
@@ -46,7 +50,9 @@ const config = ({
         browserName: 'firefox',
         headless: false,
         screenshot: 'on',
-        trace: 'on'
+        trace: 'on',
+        viewport: { width: 720, height: 720 }
+
       }
     }
   ]
