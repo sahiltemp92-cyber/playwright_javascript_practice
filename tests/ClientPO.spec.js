@@ -81,7 +81,7 @@ for (const data of dataset) {
     })
 }
 
-customtest.only("Client App E2E with test data from fixtures", async ({ page, testDataForOrder }) => {
+customtest("Client App E2E with test data from fixtures", async ({ page, testDataForOrder }) => {
     // PageObject Manager
     const poManager = new POManager(page)
 
