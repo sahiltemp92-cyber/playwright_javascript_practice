@@ -1,42 +1,26 @@
 import { POManager } from '../pages/POManager.js'
 import { test, expect } from '@playwright/test'
+const dataset = JSON.parse(JSON.stringify(require('../utils/placeOrderTestData.json')))
 
 test.only("Client APP E2E", async ({ page }) => {
-    // Test data 
-    const login_credentials = {
-        email: "sahil.khenat.career@gmail.com",
-        password: 'Rahul@12345'
-    }
-    const productName = "ADIDAS ORIGINAL"
-    const email_id = login_credentials.email
-    const password = login_credentials.password
-    const creditCardInfo = {
-        creditCardNumber: "1234 5678 9101 1122",
-        month: "12",
-        day: "25",
-        cvv: "123",
-        nameOnCard: "Sahil Khenat",
-        coupon: "rahulshettyacademy20"
-    }
-    const country_name = "India"
     // PageObject Manager
     const poManager = new POManager(page)
 
     // Login
     const loginPage = poManager.getLoginPage()
     await loginPage.goToLoginPage()
-    await loginPage.validLogin(email_id, password)
+    await loginPage.validLogin(dataset.login_credentials.email, dataset.login_credentials.password)
 
     // Dashboard
     const dashboardPage = poManager.getDashboardPage()
-    await dashboardPage.addProductToCart(productName)
+    await dashboardPage.addProductToCart(dataset.productName)
     await dashboardPage.navigateToCart()
 
     // Go to cart
     const cartPage = poManager.getCartPage()
     const cartProducts = await cartPage.getCartProducts()
     console.log(cartProducts)
-    expect(cartProducts).toContain(productName)
+    expect(cartProducts).toContain(dataset.productName)
 
     // Checkout
     await cartPage.clickCheckout()
@@ -44,14 +28,14 @@ test.only("Client APP E2E", async ({ page }) => {
     const checkoutPage = poManager.getCheckoutPage()
 
     // Fill Credit Card info - Credit card number, CVV, Expiry date, Name on card
-    await checkoutPage.fillCreditCardDetails(creditCardInfo.creditCardNumber, creditCardInfo.month, creditCardInfo.day, creditCardInfo.cvv, creditCardInfo.nameOnCard, creditCardInfo.coupon)
+    await checkoutPage.fillCreditCardDetails(dataset.creditCardInfo.creditCardNumber, dataset.creditCardInfo.month, dataset.creditCardInfo.day, dataset.creditCardInfo.cvv, dataset.creditCardInfo.nameOnCard, dataset.creditCardInfo.coupon)
 
     // Fill Shipping Info - Email, Country
-    await checkoutPage.fillShippingDetails(country_name)
+    await checkoutPage.fillShippingDetails(dataset.country)
 
     // Verify email is same as login email
     const prefilledEmail = await checkoutPage.getPrefilledEmail()
-    expect(prefilledEmail).toEqual(email_id)
+    expect(prefilledEmail).toEqual(dataset.login_credentials.email)
 
     // Place order
     await checkoutPage.placeOrder()
