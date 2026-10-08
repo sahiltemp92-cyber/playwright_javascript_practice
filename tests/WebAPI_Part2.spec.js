@@ -16,7 +16,7 @@ test.beforeAll(async ({ browser }) => {
 }
 )
 
-test("Go to Dashboard page and print the product names", async () => {
+test("@API Go to Dashboard page and print the product names", async () => {
     const page = await webContext.newPage()
     await page.goto("https://rahulshettyacademy.com/client/")
     await page.waitForLoadState("domcontentloaded")

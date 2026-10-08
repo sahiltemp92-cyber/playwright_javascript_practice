@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test("Hide & Show TextBox Validations", async ({ page }) => {
+test("@Web Hide & Show TextBox Validations", async ({ page }) => {
 
     await page.goto('https://rahulshettyacademy.com/AutomationPractice/')
     await page.goto("https:www.google.com")
@@ -16,7 +16,7 @@ test("Hide & Show TextBox Validations", async ({ page }) => {
 }
 )
 
-test("Alert popup handling", async ({ page }) => {
+test("@Web Alert popup handling", async ({ page }) => {
     await page.goto('https://rahulshettyacademy.com/AutomationPractice/')
     await page.getByPlaceholder("Enter Your Name").fill("Sahil")
     page.on("dialog", dialog => dialog.accept())
