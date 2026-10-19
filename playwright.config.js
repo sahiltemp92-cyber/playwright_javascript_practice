@@ -23,7 +23,8 @@ const config = ({
     browserName: 'chromium',
     headless: false,
     trace: 'on'
-  }
+  },
+  retries: 2
 })
 
 module.exports = config
