@@ -1,7 +1,7 @@
 import { LoginPage } from "./LoginPage"
 import { DashboardPage } from "./DashboardPage"
 import { CartPage } from "./CartPage"
-import { CheckOutPage } from "./CheckoutPage"
+import { CheckOutPage } from "./CheckOutPage"
 import { OrdersListPage } from "./OrdersListPage"
 import { ThankYouPage } from "./ThankYouPage"
 import { OrderDetailsPage } from "./OrderDetailsPage"
