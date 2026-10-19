@@ -18,7 +18,7 @@ test('Extract text content - Test with Locators', async ({ page }) => {
     const all_products = page.locator(".card-body b");
     const all_products_names = (await all_products.allTextContents());
     console.log(all_products_names);
-    expect(all_products_names).toContain("ADIDA1S ORIGINAL");
+    expect(all_products_names).toContain("ADIDAS ORIGINAL");
 
     // Get first product name and verify it contains ADIDAS ORIGINAL
     const first_product = page.locator(".card-body b").first();
