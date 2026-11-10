@@ -1,8 +1,8 @@
-import { POManager } from '../pages/POManager.js'
+import { POManager } from '../pages_ts/POManager'
 import { test, expect } from '@playwright/test'
-import { customtest } from "../utils/test-base"
+import { customtest, TestDataForOrder } from "../utils_ts/test-base"
 
-const dataset = JSON.parse(JSON.stringify(require('../utils/placeOrderTestData.json')))
+const dataset: TestDataForOrder[] = JSON.parse(JSON.stringify(require('../utils_ts/placeOrderTestData.json')))
 
 for (const data of dataset) {
     test(`Client APP E2E - ${data.productName}`, async ({ page }) => {
@@ -31,7 +31,14 @@ for (const data of dataset) {
         const checkoutPage = poManager.getCheckoutPage()
 
         // Fill Credit Card info - Credit card number, CVV, Expiry date, Name on card
-        await checkoutPage.fillCreditCardDetails(data.creditCardInfo.creditCardNumber, data.creditCardInfo.month, data.creditCardInfo.day, data.creditCardInfo.cvv, data.creditCardInfo.nameOnCard, data.creditCardInfo.coupon)
+        await checkoutPage.fillCreditCardDetails(
+            data.creditCardInfo.creditCardNumber,
+            data.creditCardInfo.month,
+            data.creditCardInfo.day,
+            data.creditCardInfo.cvv,
+            data.creditCardInfo.nameOnCard,
+            data.creditCardInfo.coupon
+        )
 
         // Fill Shipping Info - Email, Country
         await checkoutPage.fillShippingDetails(data.country)
@@ -43,9 +50,9 @@ for (const data of dataset) {
         // Place order
         await checkoutPage.placeOrder()
         const success_message = await checkoutPage.success_message.textContent()
-        expect(success_message.trim()).toEqual("Thankyou for the order.")
+        expect(success_message?.trim()).toEqual("Thankyou for the order.")
         const orderId_str = await checkoutPage.orderId_str.textContent()
-        const orderId = orderId_str.split(" ")[2]; //Split by space and get the third element
+        const orderId = orderId_str?.split(" ")[2] || ""
         console.log(orderId)
 
         // Go to Orders page
@@ -59,7 +66,7 @@ for (const data of dataset) {
         for (let i = 0; i < rows_count; i++) {
             // Click on View button that is on same row as 
             const rowOrderId = await ordersListPage.rows.nth(i).locator("th").textContent()
-            if (orderId.includes(rowOrderId)) {
+            if (rowOrderId && orderId.includes(rowOrderId)) {
                 await ordersListPage.rows.nth(i).locator("button").filter({ hasText: 'View' }).first().click()
                 break;
             }
@@ -107,7 +114,14 @@ customtest("Client App E2E with test data from fixtures", async ({ page, testDat
     const checkoutPage = poManager.getCheckoutPage()
 
     // Fill Credit Card info - Credit card number, CVV, Expiry date, Name on card
-    await checkoutPage.fillCreditCardDetails(testDataForOrder.creditCardInfo.creditCardNumber, testDataForOrder.creditCardInfo.month, testDataForOrder.creditCardInfo.day, testDataForOrder.creditCardInfo.cvv, testDataForOrder.creditCardInfo.nameOnCard, testDataForOrder.creditCardInfo.coupon)
+    await checkoutPage.fillCreditCardDetails(
+        testDataForOrder.creditCardInfo.creditCardNumber,
+        testDataForOrder.creditCardInfo.month,
+        testDataForOrder.creditCardInfo.day,
+        testDataForOrder.creditCardInfo.cvv,
+        testDataForOrder.creditCardInfo.nameOnCard,
+        testDataForOrder.creditCardInfo.coupon
+    )
 
     // Fill Shipping Info - Email, Country
     await checkoutPage.fillShippingDetails(testDataForOrder.country)
@@ -119,9 +133,9 @@ customtest("Client App E2E with test data from fixtures", async ({ page, testDat
     // Place order
     await checkoutPage.placeOrder()
     const success_message = await checkoutPage.success_message.textContent()
-    expect(success_message.trim()).toEqual("Thankyou for the order.")
+    expect(success_message?.trim()).toEqual("Thankyou for the order.")
     const orderId_str = await checkoutPage.orderId_str.textContent()
-    const orderId = orderId_str.split(" ")[2]; //Split by space and get the third element
+    const orderId = orderId_str?.split(" ")[2] || ""
     console.log(orderId)
 
     // Go to Orders page
@@ -135,7 +149,7 @@ customtest("Client App E2E with test data from fixtures", async ({ page, testDat
     for (let i = 0; i < rows_count; i++) {
         // Click on View button that is on same row as 
         const rowOrderId = await ordersListPage.rows.nth(i).locator("th").textContent()
-        if (orderId.includes(rowOrderId)) {
+        if (rowOrderId && orderId.includes(rowOrderId)) {
             await ordersListPage.rows.nth(i).locator("button").filter({ hasText: 'View' }).first().click()
             break;
         }
